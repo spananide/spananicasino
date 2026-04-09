@@ -24,11 +24,3 @@ Aktuell ist das Projekt als reines Frontend-Mockup aufgebaut:
 * **Vanilla JavaScript:** DOM-Manipulation, Mock-Datenbank (`localStorage`) und Leaderboard-Logik.
 
 ---
-
-## 🚀 Installation & Start
-
-Da es sich aktuell um ein Frontend-Projekt handelt, benötigst du keinen komplexen Server oder Build-Tools, um es lokal zu testen.
-
-1. **Repository klonen:**
-   ```bash
-   git clone [https://github.com/DEIN_USERNAME/spanani-casino.git](https://github.com/DEIN_USERNAME/spanani-casino.git)
