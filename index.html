@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Spanani Casino</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container" id="loginScreen">
+    <h1>Spanani Casino</h1>
+    <p style="text-align:center; color: var(--text-muted);">Logge dich ein, um zu spielen.</p>
+    <input type="text" id="username" placeholder="Nutzername">
+    <input type="password" id="password" placeholder="Passwort">
+    <button onclick="login()">Betreten</button>
+</div>
+
+<div class="container hidden" id="dashboard">
+    <h2 id="welcomeText">Willkommen</h2>
+    <div class="balance-display">💰 <span id="balance">0</span> Coins</div>
+
+    <h3>Gratis Coins abholen</h3>
+    <div class="reward-section">
+        <button class="reward-btn" onclick="claimReward('hourly', 100)">Stündlich (+100)</button>
+        <button class="reward-btn" onclick="claimReward('daily', 1000)">Täglich (+1000)</button>
+        <button class="reward-btn" onclick="claimReward('weekly', 5000)">Wöchentlich (+5000)</button>
+    </div>
+
+    <h3>Spiele</h3>
+    <div class="games-grid">
+        <div class="game-card" onclick="window.location.href='/games/dice'">🎲 Dice</div>
+        <div class="game-card" onclick="window.location.href='/games/crash'">📈 Crash</div>
+        <div class="game-card" onclick="window.location.href='/games/mines'">💣 Mines</div>
+        <div class="game-card" onclick="window.location.href='/games/slots'">🎰 Slots</div>
+    </div>
+
+    <h3>Global Leaderboard</h3>
+    <div class="leaderboard" id="leaderboardList">
+        </div>
+    
+    <div id="adminPanel" class="hidden" style="margin-top: 20px; padding: 20px; background: #8e0000; border-radius: 10px;">
+        <h3>👑 Admin Panel</h3>
+        <p>Willkommen, Creator Spanani. Hier kannst du später Stats prüfen und User bannen.</p>
+    </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
