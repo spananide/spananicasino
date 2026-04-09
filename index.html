@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanani Casino • Luxus & Spannung</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root { --purple: #6B46C1; --light-purple: #9F7AEA; --gold: #FBBF24; }
+    body {
+      background: linear-gradient(135deg, #1a0033 0%, #2a1a4a 100%);
+      color: #e0d4ff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .neon-purple { text-shadow: 0 0 25px #9F7AEA, 0 0 40px #6B46C1; }
+    .gold-text { color: #FBBF24; text-shadow: 0 0 15px #FBBF24; }
+    .card-hover { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .card-hover:hover { transform: translateY(-15px) scale(1.04); box-shadow: 0 0 50px rgba(159, 122, 234, 0.7); }
+    .game-canvas { border: 4px solid #9F7AEA; border-radius: 20px; background: #1a0033; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="bg-black/90 backdrop-blur-xl border-b border-purple-500 fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-violet-500 rounded-3xl flex items-center justify-center text-3xl font-black text-white neon-purple">S</div>
+        <div>
+          <h1 class="text-4xl font-black neon-purple tracking-tight">Spanani</h1>
+          <p class="text-xs text-purple-300 -mt-1">CASINO</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-10 text-lg">
+        <a href="#" onclick="navigate('home')" class="hover:text-purple-300 transition-colors">Home</a>
+        <a href="#" onclick="navigate('games')" class="hover:text-purple-300 transition-colors">Spiele</a>
+        <a href="#" onclick="navigate('rewards')" class="hover:text-purple-300 transition-colors">Belohnungen</a>
+        <a href="#" onclick="navigate('leaderboard')" class="hover:text-purple-300 transition-colors">Leaderboard</a>
+      </div>
+      <div class="flex items-center gap-6">
+        <div id="user-info" class="hidden items-center gap-5">
+          <span id="username-display" class="font-semibold text-lg"></span>
+          <div id="balance" class="bg-gradient-to-r from-purple-900 to-violet-900 px-7 py-3 rounded-3xl font-bold text-xl gold-text flex items-center gap-2">
+            <i class="fa-solid fa-coins"></i> <span>500</span> €
+          </div>
+        </div>
+        <button onclick="showLoginModal()" id="login-btn" class="bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:brightness-110 px-9 py-4 rounded-3xl font-semibold text-lg shadow-lg">Login / Registrieren</button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="content" class="pt-28 pb-20 max-w-7xl mx-auto px-8">
+
+    <!-- HOME -->
+    <div id="home-page">
+      <div class="text-center py-24">
+        <h2 class="text-7xl font-black neon-purple mb-6">Willkommen im Spanani Casino</h2>
+        <p class="text-3xl text-purple-200 mb-12">Nur Belohnungen. Pure Spannung. Echte Gewinne.</p>
+        <div class="flex flex-wrap justify-center gap-6">
+          <button onclick="navigate('games')" class="bg-gradient-to-r from-gold to-amber-400 text-black px-16 py-7 rounded-3xl text-2xl font-bold hover:scale-110 transition">Jetzt spielen</button>
+          <button onclick="claimReward('hourly')" class="border-4 border-purple-400 hover:bg-purple-900/60 px-16 py-7 rounded-3xl text-2xl font-bold transition pulse">Hourly Bonus holen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMES OVERVIEW -->
+    <div id="games-page" class="hidden">
+      <h2 class="text-6xl font-bold neon-purple mb-12 text-center">Unsere exklusiven Spiele</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8" id="games-grid"></div>
+    </div>
+
+    <!-- CRASH GAME -->
+    <div id="game-crash" class="hidden max-w-3xl mx-auto">
+      <div class="bg-black/80 backdrop-blur-2xl rounded-3xl p-10 border-4 border-purple-500">
+        <h2 class="text-5xl font-black text-center neon-purple mb-8">CRASH</h2>
+        <canvas id="crash-canvas" width="700" height="300" class="game-canvas mx-auto block"></canvas>
+        <div id="crash-multiplier" class="text-8xl font-black text-center gold-text my-8">1.00x</div>
+        <div class="flex gap-4">
+          <button onclick="startCrash()" id="start-crash-btn" class="flex-1 bg-red-600 hover:bg-red-700 py-6 rounded-2xl text-2xl font-bold">BET 100 € STARTEN</button>
+          <button onclick="cashOutCrash()" id="cashout-btn" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 py-6 rounded-2xl text-2xl font-bold">JETZT CASHOUT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLINKO GAME -->
+    <div id="game-plinko" class="hidden max-w-3xl mx-auto">
+      <div class="bg-black/80 backdrop-blur-2xl rounded-3xl p-10 border-4 border-purple-500 text-center">
+        <h2 class="text-5xl font-black neon-purple mb-8">PLINKO</h2>
+        <canvas id="plinko-canvas" width="600" height="500" class="game-canvas mx-auto"></canvas>
+        <button onclick="dropPlinkoBall()" class="mt-8 bg-gradient-to-r from-purple-600 to-violet-600 px-16 py-6 rounded-3xl text-2xl font-bold">Ball droppen (50 €)</button>
+        <div id="plinko-result" class="mt-6 text-2xl font-bold"></div>
+      </div>
+    </div>
+
+    <!-- MINES GAME -->
+    <div id="game-mines" class="hidden max-w-3xl mx-auto">
+      <div class="bg-black/80 backdrop-blur-2xl rounded-3xl p-10 border-4 border-purple-500">
+        <h2 class="text-5xl font-black neon-purple mb-8 text-center">MINES</h2>
+        <div id="mines-grid" class="grid grid-cols-5 gap-3 mx-auto" style="max-width: 420px;"></div>
+        <div class="mt-10 flex justify-center gap-6">
+          <button onclick="resetMines()" class="bg-purple-700 hover:bg-purple-800 px-10 py-5 rounded-2xl">Neues Spiel</button>
+          <button onclick="cashOutMines()" class="bg-emerald-600 hover:bg-emerald-700 px-10 py-5 rounded-2xl">Cashout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOTS GAME -->
+    <div id="game-slots" class="hidden max-w-2xl mx-auto">
+      <div class="bg-black/80 backdrop-blur-2xl rounded-3xl p-12 border-4 border-purple-500 text-center">
+        <h2 class="text-5xl font-black neon-purple mb-10">SLOTS</h2>
+        <div class="flex justify-center gap-4 mb-12" id="slots-reels">
+          <div class="w-28 h-36 bg-purple-900 rounded-2xl flex items-center justify-center text-7xl border-4 border-gold" id="reel1">🍒</div>
+          <div class="w-28 h-36 bg-purple-900 rounded-2xl flex items-center justify-center text-7xl border-4 border-gold" id="reel2">🍒</div>
+          <div class="w-28 h-36 bg-purple-900 rounded-2xl flex items-center justify-center text-7xl border-4 border-gold" id="reel3">🍒</div>
+        </div>
+        <button onclick="spinSlots()" class="bg-gradient-to-r from-amber-400 to-yellow-400 text-black px-20 py-8 rounded-3xl text-3xl font-black">SPIN (30 €)</button>
+      </div>
+    </div>
+
+    <!-- REWARDS -->
+    <div id="rewards-page" class="hidden">
+      <h2 class="text-6xl font-bold neon-purple mb-12">Belohnungen &amp; Boni</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div onclick="claimReward('hourly')" class="bg-gradient-to-br from-purple-900 to-violet-900 p-10 rounded-3xl card-hover cursor-pointer text-center">
+          <i class="fa-solid fa-clock text-7xl mb-6 text-purple-300"></i>
+          <h3 class="text-3xl font-bold mb-3">Hourly Bonus</h3>
+          <p class="text-2xl gold-text">+50 €</p>
+          <p class="text-sm mt-6 opacity-75">Jede Stunde verfügbar</p>
+        </div>
+        <div onclick="claimReward('daily')" class="bg-gradient-to-br from-purple-900 to-violet-900 p-10 rounded-3xl card-hover cursor-pointer text-center">
+          <i class="fa-solid fa-calendar text-7xl mb-6 text-purple-300"></i>
+          <h3 class="text-3xl font-bold mb-3">Daily Bonus</h3>
+          <p class="text-2xl gold-text">+250 €</p>
+        </div>
+        <div onclick="claimReward('weekly')" class="bg-gradient-to-br from-purple-900 to-violet-900 p-10 rounded-3xl card-hover cursor-pointer text-center">
+          <i class="fa-solid fa-trophy text-7xl mb-6 text-purple-300"></i>
+          <h3 class="text-3xl font-bold mb-3">Weekly Bonus</h3>
+          <p class="text-2xl gold-text">+1.500 €</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div id="leaderboard-page" class="hidden">
+      <h2 class="text-6xl font-bold neon-purple mb-12">Global Leaderboard</h2>
+      <table class="w-full text-left bg-black/60 backdrop-blur-xl rounded-3xl overflow-hidden">
+        <thead class="bg-purple-900">
+          <tr><th class="py-6 px-10">Rang</th><th class="py-6 px-10">Spieler</th><th class="py-6 px-10 text-right">Balance</th></tr>
+        </thead>
+        <tbody id="leaderboard-body" class="text-lg"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-black/95 hidden flex items-center justify-center z-[100]">
+    <div class="bg-[#1f0b3d] border-4 border-purple-500 rounded-3xl p-14 w-full max-w-md">
+      <h3 class="text-5xl font-black neon-purple text-center mb-10">Spanani Casino</h3>
+      <input id="username-input" type="text" placeholder="Username" class="w-full bg-black/60 border border-purple-400 rounded-2xl px-7 py-6 mb-6 text-xl focus:outline-none focus:border-gold">
+      <input id="password-input" type="password" placeholder="Passwort" class="w-full bg-black/60 border border-purple-400 rounded-2xl px-7 py-6 mb-10 text-xl focus:outline-none focus:border-gold">
+      <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-purple-600 to-violet-600 py-7 rounded-3xl text-2xl font-bold">Einloggen</button>
+      <p class="text-center mt-8 text-purple-300">Demo: <span class="font-mono text-gold">admin / admin</span></p>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let balance = 1250;
+    let users = [
+      {name: "LuckyLeo", balance: 45800},
+      {name: "NeonQueen", balance: 37250},
+      {name: "CrashKing", balance: 28900},
+      {name: "PlinkoPro", balance: 21400},
+      {name: "MineMaster", balance: 16750}
+    ];
+
+    function updateBalance() {
+      document.getElementById('balance').querySelector('span').textContent = Math.floor(balance).toLocaleString();
+    }
+
+    function showLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
+
+    function handleLogin() {
+      const user = document.getElementById('username-input').value.trim();
+      const pass = document.getElementById('password-input').value.trim();
+      if ((user === "admin" && pass === "admin") || (user.length > 2)) {
+        currentUser = user || "VIPPlayer";
+        document.getElementById('user-info').classList.remove('hidden');
+        document.getElementById('username-display').textContent = currentUser;
+        document.getElementById('login-modal').classList.add('hidden');
+        document.getElementById('login-btn').classList.add('hidden');
+        updateBalance();
+        navigate('home');
+      } else alert("Falsche Daten – probiere admin / admin");
+    }
+
+    function claimReward(type) {
+      if (!currentUser) return alert("Bitte einloggen!");
+      let amount = 50;
+      if (type === 'daily') amount = 250;
+      if (type === 'weekly') amount = 1500;
+      balance += amount;
+      updateBalance();
+      confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+      alert(`+${amount} € ${type.toUpperCase()} Bonus erhalten!`);
+    }
+
+    function navigate(page) {
+      document.querySelectorAll('#content > div').forEach(d => d.classList.add('hidden'));
+      const el = document.getElementById(page + '-page');
+      if (el) el.classList.remove('hidden');
+      if (page === 'leaderboard') renderLeaderboard();
+      if (page === 'games') generateGamesGrid();
+    }
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById('leaderboard-body');
+      tbody.innerHTML = '';
+      const sorted = [...users].sort((a,b) => b.balance - a.balance);
+      sorted.forEach((u, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-purple-900 hover:bg-purple-900/40';
+        tr.innerHTML = `<td class="py-7 px-10 font-bold">${i+1}</td><td class="py-7 px-10">${u.name}</td><td class="py-7 px-10 text-right gold-text font-bold">${u.balance.toLocaleString()} €</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function generateGamesGrid() {
+      const games = [
+        {id: 'crash', name: 'CRASH', icon: '🚀', color: 'from-red-500 to-rose-600'},
+        {id: 'plinko', name: 'PLINKO', icon: '🔻', color: 'from-cyan-500 to-blue-600'},
+        {id: 'mines', name: 'MINES', icon: '💣', color: 'from-amber-500 to-orange-600'},
+        {id: 'slots', name: 'SLOTS', icon: '🎰', color: 'from-purple-500 to-violet-600'}
+      ];
+      const grid = document.getElementById('games-grid');
+      grid.innerHTML = '';
+      games.forEach(g => {
+        const div = document.createElement('div');
+        div.className = `card-hover bg-gradient-to-br ${g.color} p-8 rounded-3xl text-center cursor-pointer text-white`;
+        div.innerHTML = `<div class="text-8xl mb-6">${g.icon}</div><h3 class="text-4xl font-black">${g.name}</h3>`;
+        div.onclick = () => loadGame(g.id);
+        grid.appendChild(div);
+      });
+    }
+
+    function loadGame(game) {
+      if (!currentUser) return alert("Bitte einloggen!");
+      document.querySelectorAll('#content > div').forEach(d => d.classList.add('hidden'));
+      document.getElementById(`game-${game}`).classList.remove('hidden');
+      if (game === 'mines') initMines();
+      if (game === 'plinko') initPlinko();
+    }
+
+    // Crash Game
+    let crashInterval, currentMult = 1;
+    function startCrash() {
+      if (balance < 100) return alert("Nicht genug Guthaben!");
+      balance -= 100; updateBalance();
+      currentMult = 1;
+      document.getElementById('start-crash-btn').classList.add('hidden');
+      document.getElementById('cashout-btn').classList.remove('hidden');
+      const multEl = document.getElementById('crash-multiplier');
+      crashInterval = setInterval(() => {
+        currentMult += Math.random() * 0.25 + 0.05;
+        multEl.textContent = currentMult.toFixed(2) + 'x';
+        if (Math.random() < 0.035) {
+          clearInterval(crashInterval);
+          alert(`CRASH bei ${currentMult.toFixed(2)}x – Verloren!`);
+          document.getElementById('start-crash-btn').classList.remove('hidden');
+          document.getElementById('cashout-btn').classList.add('hidden');
+        }
+      }, 120);
+    }
+    function cashOutCrash() {
+      clearInterval(crashInterval);
+      const win = Math.floor(100 * currentMult);
+      balance += win;
+      updateBalance();
+      confetti({ particleCount: 300, spread: 120 });
+      alert(`Cashout erfolgreich! +${win} €`);
+      document.getElementById('start-crash-btn').classList.remove('hidden');
+      document.getElementById('cashout-btn').classList.add('hidden');
+    }
+
+    // Simple Plinko (Canvas bounce simulation)
+    function initPlinko() {
+      const canvas = document.getElementById('plinko-canvas');
+      const ctx = canvas.getContext('2d');
+      // Einfache visuelle Simulation – bei Bedarf erweiterbar
+      ctx.fillStyle = '#4C1D95';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      // Pegs zeichnen
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 9; j++) {
+          ctx.fillStyle = '#FBBF24';
+          ctx.beginPath();
+          ctx.arc(80 + j*55 + (i%2)*27, 60 + i*55, 8, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+    }
+    function dropPlinkoBall() {
+      if (balance < 50) return alert("Nicht genug Guthaben!");
+      balance -= 50; updateBalance();
+      const multipliers = [0.5, 1, 2, 5, 10, 2, 1, 0.5];
+      const winMult = multipliers[Math.floor(Math.random()*multipliers.length)];
+      const win = Math.floor(50 * winMult);
+      balance += win;
+      updateBalance();
+      document.getElementById('plinko-result').innerHTML = `Gewonnen: <span class="gold-text">${win} €</span> (${winMult}x)`;
+      confetti({ particleCount: 150, spread: 70 });
+    }
+
+    // Mines Game (5x5 Grid)
+    let minesBoard = [];
+    let revealed = 0;
+    function initMines() {
+      const grid = document.getElementById('mines-grid');
+      grid.innerHTML = '';
+      minesBoard = [];
+      revealed = 0;
+      for (let i = 0; i < 25; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'w-20 h-20 bg-purple-900 hover:bg-purple-700 border-4 border-purple-600 rounded-2xl flex items-center justify-center text-4xl cursor-pointer';
+        cell.dataset.index = i;
+        cell.onclick = () => revealMine(cell, i);
+        grid.appendChild(cell);
+        minesBoard.push(Math.random() < 0.25); // 25% Bomben
+      }
+    }
+    function revealMine(cell, idx) {
+      if (minesBoard[idx]) {
+        cell.innerHTML = '💥';
+        cell.style.backgroundColor = '#991B1B';
+        alert("BOOM! Mine getroffen.");
+        initMines();
+      } else {
+        cell.innerHTML = '✅';
+        cell.style.backgroundColor = '#166534';
+        revealed++;
+        if (revealed >= 12) {
+          const win = 300;
+          balance += win;
+          updateBalance();
+          confetti({ particleCount: 400 });
+          alert(`Sicher durch! +${win} €`);
+        }
+      }
+    }
+    function cashOutMines() {
+      if (revealed > 0) {
+        const win = revealed * 40;
+        balance += win;
+        updateBalance();
+        alert(`Cashout: +${win} €`);
+      }
+    }
+    function resetMines() { initMines(); }
+
+    // Slots
+    const symbols = ['🍒', '🍋', '🍉', '⭐', '💎', '7️⃣'];
+    function spinSlots() {
+      if (balance < 30) return alert("Nicht genug Guthaben!");
+      balance -= 30; updateBalance();
+      const reel1 = document.getElementById('reel1');
+      const reel2 = document.getElementById('reel2');
+      const reel3 = document.getElementById('reel3');
+      let spins = 0;
+      const interval = setInterval(() => {
+        reel1.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+        reel2.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+        reel3.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+        spins++;
+        if (spins > 15) {
+          clearInterval(interval);
+          // Check win
+          if (reel1.textContent === reel2.textContent && reel2.textContent === reel3.textContent) {
+            const win = 450;
+            balance += win;
+            updateBalance();
+            confetti({ particleCount: 500, spread: 100 });
+            alert(`JACKPOT! Drei gleiche – +${win} €`);
+          } else {
+            alert("Kein Gewinn diesmal. Viel Glück beim nächsten Spin!");
+          }
+        }
+      }, 80);
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('user-info').classList.add('hidden');
+      document.getElementById('login-btn').classList.remove('hidden');
+      navigate('home');
+    }
+
+    // Init
+    window.onload = () => {
+      updateBalance();
+      renderLeaderboard();
+      navigate('home');
+
+      // Leaderboard auto-update simulation
+      setInterval(() => {
+        if (Math.random() > 0.6) {
+          users[Math.floor(Math.random()*users.length)].balance += Math.floor(Math.random()*800) + 200;
+          renderLeaderboard();
+        }
+      }, 25000);
+    };
+  </script>
+</body>
+</html>
