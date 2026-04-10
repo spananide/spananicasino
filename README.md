@@ -1,26 +1,28 @@
 # 🎰 Spanani Casino
 
-Ein hochmodernes, lila designtes Frontend-Grundgerüst für eine Online-Casino-Plattform. Dieses Projekt simuliert grundlegende Casino-Funktionen wie Account-Erstellung, ein gestaffeltes Belohnungssystem, ein globales Leaderboard und eine nahtlose Spielauswahl im Stil bekannter Plattformen.
+A fully functional browser-based casino built with **HTML, CSS, and vanilla JavaScript**. Play classic casino games with a sleek cyber-neon design, complete with user accounts, balance system, daily rewards, leaderboard, and admin panel.
 
----
+![Spanani Casino Website](https://casino.spanani.de)
 
-## 🌟 Features
+## ✨ Features
 
-* **Account-System (Mock-up):** Simulierter Login mit lokalem Speichern des Kontostands im Browser.
-* **Belohnungssystem:** Spieler können stündliche, tägliche und wöchentliche "Gratis Coins" beanspruchen, um ihr Guthaben aufzuladen.
-* **Globales Leaderboard:** Eine dynamische Rangliste, die die Spieler mit dem meisten Geld anzeigt und nach Kontostand sortiert.
-* **Modernes Design:** Einzigartiges Dark-Purple-Theme mit flüssigen CSS-Animationen (`fadeIn`, `pulseGlow`), Hover-Effekten und Responsive Grid.
-* **Admin-Zugang:** Ein verstecktes Admin-Panel für den Creator (Login: `Spanani` / Passwort: `Admin`).
-* **Spiel-Routing:** Vorbereitete Ordnerstruktur und Navigation für individuelle Spiele wie Dice, Crash, Mines und Slots.
+### 🎮 Games Included
+- **Dice** – Roll under your target with adjustable risk
+- **Blackjack** – Classic casino rules with Hit, Stand & Double Down
+- **Roulette** – Bet on Red, Black, Even/Odd, Dozens & more
+- **Crash** – High-stakes multiplier game with auto cashout
+- **Slots** – Beautiful animated slot machine with paytable
+- **Mines** – Risk/reward grid game (like Minesweeper)
+- **Coin Flip** – Simple 50/50 heads or tails
+- **Hi-Lo** – Guess if the next card is higher or lower
 
----
-
-## 🛠️ Tech Stack
-
-Aktuell ist das Projekt als reines Frontend-Mockup aufgebaut:
-
-* **HTML5:** Semantische Struktur und Routing-Vorbereitungen für die verschiedenen Spiele.
-* **CSS3:** Custom Properties (Variablen für das konsistente lila Design), Flexbox/Grid-Layouts für das Dashboard, Keyframe-Animationen.
-* **Vanilla JavaScript:** DOM-Manipulation, Mock-Datenbank (`localStorage`) und Leaderboard-Logik.
-
----
+### 🌟 Other Features
+- **User Registration & Login** (with secure password hashing)
+- **Admin Panel** (hidden powerful admin with "Spanani:Admin")
+- **Daily Rewards** – Hourly, Daily & Weekly bonuses
+- **Live Leaderboard** (auto-refreshes every 5 seconds)
+- **Profile & Statistics** tracking
+- **Persistent data** using `localStorage`
+- **Beautiful cyberpunk/neon UI** with particle effects
+- **Toast notifications** & smooth animations
+- Fully responsive design
